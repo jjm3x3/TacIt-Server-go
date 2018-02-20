@@ -1,0 +1,2 @@
+CREATE USER gorm;
+CREATE DATABASE tacit_db;
