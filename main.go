@@ -10,6 +10,7 @@ import (
 
 type post struct {
 	Title string `json:"title"`
+	Body  string `json:"body"`
 }
 
 func main() {
@@ -31,17 +32,28 @@ func main() {
 
 		c.JSON(200, gin.H{"message": "pong"})
 	})
-	r.POST("/note", func(c *gin.Context) {
-		var aPost post
-		err := c.BindJSON(&aPost)
-		if err != nil {
-			fmt.Println("has headers: ", c.GetHeader("Content-Type"))
-			fmt.Println("There was an error binding to aPost: ", c.PostForm("title"))
-			c.JSON(400, gin.H{"Error": "There was an error with what you provided"})
-			return
-		}
-		fmt.Println("Here is the result: ", aPost)
-		c.JSON(200, gin.H{"status": "success"})
-	})
+
+	r.POST("/note", makePost)
+
 	r.Run()
+}
+
+func makePost(c *gin.Context) {
+	var aPost post
+	err := c.BindJSON(&aPost)
+	if err != nil {
+		fmt.Println("has headers: ", c.GetHeader("Content-Type"))
+		var body []byte
+		num, err := c.Request.Body.Read(body)
+		if num <= 0 { // not sure if this is really an error
+			fmt.Println("There was no body provided")
+		} else if err != nil {
+			fmt.Println("There was an error reading the body: ", err)
+		}
+		fmt.Println("There was an error binding to aPost: ")
+		c.JSON(400, gin.H{"Error": "There was an error with what you provided"})
+		return
+	}
+	fmt.Printf("Here is the result: '%v'\n", aPost)
+	c.JSON(200, gin.H{"status": "success"})
 }
