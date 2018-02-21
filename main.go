@@ -9,9 +9,14 @@ import (
 )
 
 type post struct {
+	gorm.Model
 	Title string `json:"title"`
 	Body  string `json:"body"`
 }
+
+var (
+	db *gorm.DB
+)
 
 func main() {
 	fmt.Println("Hello, World")
@@ -20,7 +25,8 @@ func main() {
 	defaultUser := "gorm"
 	defaultDb := "tacit_db"
 
-	db, err := gorm.Open("postgres", "host="+defaultHost+" port="+defaultPort+" user="+defaultUser+" dbname="+defaultDb+" sslmode=disable") // TODO:: enable ssl
+	var err error
+	db, err = gorm.Open("postgres", "host="+defaultHost+" port="+defaultPort+" user="+defaultUser+" dbname="+defaultDb+" sslmode=disable") // TODO:: enable ssl
 	defer db.Close()
 
 	if err != nil {
@@ -55,5 +61,7 @@ func makePost(c *gin.Context) {
 		return
 	}
 	fmt.Printf("Here is the result: '%v'\n", aPost)
+	db.AutoMigrate(&post{}) // probably doesn't need to happen every time
+	db.Create(&aPost)
 	c.JSON(200, gin.H{"status": "success"})
 }
