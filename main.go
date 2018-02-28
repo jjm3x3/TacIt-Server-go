@@ -56,7 +56,7 @@ func makePost(c *gin.Context) {
 		} else if err != nil {
 			fmt.Println("There was an error reading the body: ", err)
 		}
-		fmt.Println("There was an error binding to aPost: ")
+		fmt.Println("There was an error binding to aPost: ", body)
 		c.JSON(400, gin.H{"Error": "There was an error with what you provided"})
 		return
 	}
