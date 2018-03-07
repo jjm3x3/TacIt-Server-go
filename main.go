@@ -6,17 +6,23 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
+	"golang.org/x/crypto/bcrypt"
 )
-
-type post struct {
-	gorm.Model
-	Title string `json:"title"`
-	Body  string `json:"body"`
-}
 
 var (
 	db *gorm.DB
 )
+
+type webUser struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type dbUser struct {
+	gorm.Model
+	Username string
+	Password string
+}
 
 func main() {
 	fmt.Println("Hello, World")
@@ -39,13 +45,41 @@ func main() {
 		c.JSON(200, gin.H{"message": "pong"})
 	})
 
+	r.POST("/user", createUser)
+
 	r.POST("/note", makePost)
 
 	r.Run()
 }
 
 func runMigration() {
-	db.AutoMigrate(&post{}) // probably doesn't need to happen every time
+	// probably doesn't need to happen every time
+	db.AutoMigrate(&post{})
+	db.AutoMigrate(&dbUser{})
+}
+
+func createUser(c *gin.Context) {
+	var aUser webUser
+	err := c.BindJSON(&aUser)
+	if err != nil {
+		fmt.Println("There was an error parsing User: ", err)
+	}
+	fmt.Println("Here is the user to create: ", aUser)
+
+	theUser := dbUser{Username: aUser.Username}
+
+	pwBytes := []byte(aUser.Password)
+	pwHashBytes, err := bcrypt.GenerateFromPassword(pwBytes, 10)
+	theUser.Password = string(pwHashBytes)
+	if err != nil {
+		fmt.Println("There was and error: ", err)
+		c.JSON(500, gin.H{"Error": "There was and error with creating your passowrd"})
+	}
+
+	fmt.Println("Here is the user That will be created: ", theUser)
+
+	// db.Create(theUser)
+	c.JSON(200, gin.H{"status": "success"})
 }
 
 func makePost(c *gin.Context) {
