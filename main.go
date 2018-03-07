@@ -44,11 +44,15 @@ func main() {
 	r.Run()
 }
 
+func runMigration() {
+	db.AutoMigrate(&post{}) // probably doesn't need to happen every time
+}
+
 func makePost(c *gin.Context) {
 	var aPost post
 	err := c.BindJSON(&aPost)
 	if err != nil {
-		fmt.Println("has headers: ", c.GetHeader("Content-Type"))
+		// fmt.Println("has headers: ", c.GetHeader("Content-Type"))
 		var body []byte
 		num, err := c.Request.Body.Read(body)
 		if num <= 0 { // not sure if this is really an error
@@ -60,8 +64,7 @@ func makePost(c *gin.Context) {
 		c.JSON(400, gin.H{"Error": "There was an error with what you provided"})
 		return
 	}
-	fmt.Printf("Here is the result: '%v'\n", aPost)
-	db.AutoMigrate(&post{}) // probably doesn't need to happen every time
+	// fmt.Printf("Here is the result: '%v'\n", aPost)
 	db.Create(&aPost)
 	c.JSON(200, gin.H{"status": "success"})
 }
