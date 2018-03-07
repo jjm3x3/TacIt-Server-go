@@ -39,6 +39,8 @@ func main() {
 		fmt.Println("There was an error opeing the db: ", err)
 	}
 
+	runMigration()
+
 	r := gin.Default()
 	r.GET("/ping", func(c *gin.Context) {
 
@@ -70,15 +72,18 @@ func createUser(c *gin.Context) {
 
 	pwBytes := []byte(aUser.Password)
 	pwHashBytes, err := bcrypt.GenerateFromPassword(pwBytes, 10)
-	theUser.Password = string(pwHashBytes)
 	if err != nil {
 		fmt.Println("There was and error: ", err)
 		c.JSON(500, gin.H{"Error": "There was and error with creating your passowrd"})
 	}
+	theUser.Password = string(pwHashBytes)
 
 	fmt.Println("Here is the user That will be created: ", theUser)
 
-	// db.Create(theUser)
+	err = db.Create(&theUser).Error
+	if err != nil {
+		fmt.Println("There was an issue creating user: ", err)
+	}
 	c.JSON(200, gin.H{"status": "success"})
 }
 
