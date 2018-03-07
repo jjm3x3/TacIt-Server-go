@@ -49,6 +49,8 @@ func main() {
 
 	r.POST("/user", createUser)
 
+	r.POST("/login", login)
+
 	r.POST("/note", makePost)
 
 	r.Run()
@@ -58,6 +60,31 @@ func runMigration() {
 	// probably doesn't need to happen every time
 	db.AutoMigrate(&post{})
 	db.AutoMigrate(&dbUser{})
+}
+
+func login(c *gin.Context) {
+	var login webUser
+	err := c.BindJSON(&login)
+	if err != nil {
+		fmt.Println("There was an error parsing login: ", err)
+	}
+	fmt.Println("Here is the user info used to login: ", login)
+
+	var theDbUser dbUser
+	db.Where("username = ?", login.Username).First(&theDbUser)
+
+	fmt.Println("Found this user from db: ", theDbUser)
+
+	pwBytes := []byte(login.Password)
+	err = bcrypt.CompareHashAndPassword([]byte(theDbUser.Password), pwBytes)
+	if err != nil {
+		fmt.Println("There was something very wrong when logging in!")
+		fmt.Println("err: ", err)
+		c.JSON(403, gin.H{"Error": "either username or passowrd do not match"})
+	} else {
+		fmt.Println("Login successful")
+		c.JSON(200, gin.H{"status": "login successful"})
+	}
 }
 
 func createUser(c *gin.Context) {
