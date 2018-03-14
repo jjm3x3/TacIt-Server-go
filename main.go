@@ -5,6 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/mysql"
 	_ "github.com/jinzhu/gorm/dialects/postgres"
 	"golang.org/x/crypto/bcrypt"
 )
@@ -26,17 +27,20 @@ type dbUser struct {
 
 func main() {
 	fmt.Println("Hello, World")
-	defaultHost := "localhost"
-	defaultPort := "5432"
+	// defaultHost := "localhost"
+	// defaultPort := "5432"
 	defaultUser := "gorm"
 	defaultDb := "tacit_db"
 
 	var err error
-	db, err = gorm.Open("postgres", "host="+defaultHost+" port="+defaultPort+" user="+defaultUser+" dbname="+defaultDb+" sslmode=disable") // TODO:: enable ssl
+	connectionString := defaultUser + ":@/" + defaultDb + "?charset=utf8&parseTime=True&loc=Local"
+	// connectionString := "host="+defaultHost+" port="+defaultPort+" user="+defaultUser+" dbname="+defaultDb+" sslmode=disable"
+	db, err = gorm.Open("mysql", connectionString) // TODO:: enable ssl
 	defer db.Close()
 
 	if err != nil {
 		fmt.Println("There was an error opeing the db: ", err)
+		// TODO :: should exit right away
 	}
 
 	runMigration()
