@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
       - name: myapi
-        image: myapi:0.0.1
+        image: us.gcr.io/tacit-196502/myapi:0.0.1
         ports:
         - containerPort: 8080
 ---
