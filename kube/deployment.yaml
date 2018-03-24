@@ -17,6 +17,30 @@ spec:
         image: us.gcr.io/tacit-196502/myapi:0.0.1
         ports:
         - containerPort: 8080
+      - name: cloudsql-proxy
+        image: gcr.io/cloudsql-docker/gce-proxy:1.11
+        env:
+          - name: DB_USER
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: username
+          - name: DB_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: cloudsql-db-credentials
+                key: password
+        command: ['/cloud_sql_proxy', 
+                  '-instances=tacit-196502:us-central1:tacit-dev=tcp:0.0.0.0:3306', 
+                  '-credential_file=/secrets/cloudsql/credentials.json']
+        volumeMounts:
+          - name: cloudsql-instance-credentials
+            mountPath: /secrets/cloudsql
+            readOnly: true
+      volumes:
+        - name: cloudsql-instance-credentials
+          secret: 
+            secretName: cloudsql-instance-credentials
 ---
 apiVersion: v1
 kind: Service
