@@ -2,6 +2,8 @@ package main
 
 import (
 	"fmt"
+	"os"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jinzhu/gorm"
@@ -29,11 +31,18 @@ func main() {
 	fmt.Println("Hello, World")
 	// defaultHost := "localhost"
 	// defaultPort := "5432"
-	defaultUser := "gorm"
+	dbUser := os.Getenv("DB_USER")
+	if len(dbUser) == 0 {
+		dbUser = "gorm"
+	}
 	defaultDb := "tacit_db"
+	dbPassword := os.Getenv("DB_PASSWORD")
+	if len(dbPassword) == 0 {
+		dbPassword = "@"
+	}
 
 	var err error
-	connectionString := defaultUser + ":@/" + defaultDb + "?charset=utf8&parseTime=True&loc=Local"
+	connectionString := dbUser + ":" + dbPassword + "@tcp(127.0.0.1:3306)/" + defaultDb + "?charset=utf8&parseTime=True&loc=Local"
 	// connectionString := "host="+defaultHost+" port="+defaultPort+" user="+defaultUser+" dbname="+defaultDb+" sslmode=disable"
 	db, err = gorm.Open("mysql", connectionString) // TODO:: enable ssl
 	defer db.Close()
