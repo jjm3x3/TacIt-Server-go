@@ -10,4 +10,9 @@
 # https://dev.mysql.com/doc/refman/5.7/en/data-directory-initialization-mysqld.html
 
 # should be a relative path 
-Get-Content D:\Users\jmeixner\Code\goCode\src\TacIt-go\scripts\builddb.sql | .\mysql.exe -u root -padmin mysql
+$providerRoots = get-psdrive | where { $_.Root -ne "" -and $_.Root -ne "\"} | Select-Object -Property Root
+$mysqlPath = foreach($a in $providerRoots) { Get-ChildItem -Path $a.Root -Filter mysql.exe -Recurse -ErrorAction SilentlyContinue | select-object -first 1 |  %{ $_.FullName } } 
+# TODO:: check that there is only one path
+
+
+Get-Content $($(Get-Location).path + '\scripts\builddb.sql') | & $mysqlPath -P3306 -u root -padmin mysql
