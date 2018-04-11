@@ -1,0 +1,2 @@
+# goes without saying the file D:/Users/jmeixner/Code/goCode/src/TacIt-go/config/tacit-db67b0097365.json must exist 
+docker run -d -v /cloudsql:/cloudsql -v D:/Users/jmeixner/Code/goCode/src/TacIt-go/config/tacit-db67b0097365.json:/config -p 127.0.0.1:3307:3306 gcr.io/cloudsql-docker/gce-proxy:1.11 /cloud_sql_proxy -instances=tacit-196502:us-central1:tacit-dev=tcp:0.0.0.0:3306 -credential_file=/config

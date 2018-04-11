@@ -18,6 +18,12 @@
   version = "v1.2"
 
 [[projects]]
+  name = "github.com/go-sql-driver/mysql"
+  packages = ["."]
+  revision = "a0583e0143b1624142adab07e0e97fe106d99561"
+  version = "v1.3"
+
+[[projects]]
   name = "github.com/golang/protobuf"
   packages = ["proto"]
   revision = "925541529c1fa6821df4e44ce2723319eb2be768"
@@ -27,6 +33,7 @@
   name = "github.com/jinzhu/gorm"
   packages = [
     ".",
+    "dialects/mysql",
     "dialects/postgres"
   ]
   revision = "5174cc5c242a728b435ea2be8a2f7f998e15429b"
@@ -62,6 +69,15 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/crypto"
+  packages = [
+    "bcrypt",
+    "blowfish"
+  ]
+  revision = "85f98707c97e11569271e4d9b3d397e079c4f4d0"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "37707fdb30a5b38865cfb95e5aab41707daec7fd"
@@ -81,6 +97,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "38143c40da198bc61d4b56f3fdbbb3d49b1d6d9e3131797df78915179c6c1511"
+  inputs-digest = "bf7dc5c05ca65a495b05c990d3865a0c1c1318b6fe2c75100b28b28c7fa2f9cc"
   solver-name = "gps-cdcl"
   solver-version = 1
